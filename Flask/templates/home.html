@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Interactive Cursor with Shapes</title>
+  <title>Dynamic Home Page</title>
   <link href="https://fonts.googleapis.com/css?family=Montserrat:900&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.1/gsap.min.js"></script> <!-- GSAP Library -->
   <style>
+    /* Background Gradient */
     body {
       font-family: Montserrat, sans-serif;
       font-weight: 900;
@@ -14,91 +15,148 @@
       padding: 0;
       overflow: hidden;
       cursor: none; /* Hides default cursor */
+      background: linear-gradient(45deg, #ff6f61, #ffcc57, #3b3d99); /* Vibrant gradient */
+      background-size: 600% 600%;
+      animation: gradientAnimation 10s ease infinite; /* Animated gradient */
     }
 
-    .shapes {
-      position: relative;
-      height: 100vh;
-      width: 100vw;
-      background: #2128bd;
-      overflow: hidden;
+    /* Gradient Animation */
+    @keyframes gradientAnimation {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
-    .shape {
-      position: absolute;
-      border-radius: 50%;
-      will-change: transform;
-    }
-
-    .shape-1 {
-      background: #005ffe;
-      width: 650px;
-      height: 650px;
-      margin: -325px 0 0 -325px;
-    }
-
-    .shape-2 {
-      background: #ffe5e3;
-      width: 440px;
-      height: 440px;
-      margin: -220px 0 0 -220px;
-    }
-
-    .shape-3 {
-      background: #ffcc57;
-      width: 270px;
-      height: 270px;
-      margin: -135px 0 0 -135px;
-    }
-
-    .cursor {
+    /* Navigation Bar */
+    nav {
       position: fixed;
-      background: #2128bd;
+      top: 0;
+      width: 100%;
+      background: #baeb34
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    nav .logo {
+      font-size: 24px;
+      color: #fff;
+      text-transform: uppercase;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav ul li {
+      margin: 0 15px;
+    }
+
+    nav ul li a {
+      text-decoration: none;
+      color: #fff;
+      font-size: 16px;
+      transition: color 0.3s ease;
+    }
+
+    nav ul li a:hover {
+      color: #ffcc57;
+    }
+
+    /* Hero Section */
+    .hero {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: #fff;
+      padding: 0 20px;
+    }
+
+    .hero h1 {
+      font-size: 4rem;
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .hero p {
+      font-size: 1.5rem;
+      margin: 20px 0;
+      max-width: 600px;
+    }
+
+    .hero .cta-buttons {
+      margin-top: 20px;
+    }
+
+    .hero .cta-buttons a {
+      text-decoration: none;
+      color: #fff;
+      background: #3b3d99;
+      padding: 10px 20px;
+      border-radius: 5px;
+      margin: 0 10px;
+      font-size: 1rem;
+      transition: background 0.3s ease;
+    }
+
+    .hero .cta-buttons a:hover {
+      background: #ff6f61;
+    }
+
+    /* Custom Cursor */
+    .cursor {
+      position: absolute;
       width: 20px;
       height: 20px;
-      margin: -10px 0 0 -10px;
+      background: #fff;
       border-radius: 50%;
-      will-change: transform;
-      user-select: none;
       pointer-events: none;
-      z-index: 10000;
-    }
-
-    ::selection {
-      color: #fff;
-      background: #2128bd;
+      transform: translate(-50%, -50%);
+      z-index: 1000;
     }
   </style>
 </head>
 <body>
+  <!-- Navigation Bar -->
+  <nav>
+    <div class="logo">My Website</div>
+    <ul>
+      <li><a href="#home">Home</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
 
-  <div class="shapes">
-    <!-- Shapes that move when the mouse is moved -->
-    <div class="shape shape-1"></div>
-    <div class="shape shape-2"></div>
-    <div class="shape shape-3"></div>
+  <!-- Hero Section -->
+  <div class="hero">
+    <h1>Welcome to My Website</h1>
+    <p>Explore the world of creativity and innovation with our dynamic and interactive platform.</p>
+    <div class="cta-buttons">
+      <a href="#get-started">Get Started</a>
+      <a href="#learn-more">Learn More</a>
+    </div>
   </div>
 
+  <!-- Custom Cursor -->
   <div class="cursor"></div>
 
   <script>
-    // GSAP animation to move shapes and custom cursor
-    document.body.addEventListener("mousemove", evt => {
-      const mouseX = evt.clientX;
-      const mouseY = evt.clientY;
-
-      gsap.set(".cursor", {
-        x: mouseX,
-        y: mouseY
-      });
-
-      gsap.to(".shape", {
-        x: mouseX,
-        y: mouseY,
-        stagger: -0.1
-      });
+    // Custom Cursor Script
+    const cursor = document.querySelector('.cursor');
+    document.addEventListener('mousemove', (e) => {
+      cursor.style.left = `${e.pageX}px`;
+      cursor.style.top = `${e.pageY}px`;
     });
   </script>
-
 </body>
 </html>

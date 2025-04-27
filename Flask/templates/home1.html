@@ -63,26 +63,27 @@
 
     /* Button Styles */
     .button {
-      background-color: #091425;
+      background: linear-gradient(45deg, #ffcc57, #ff7f50);
       border: none;
       color: white;
       padding: 15px 32px;
       text-align: center;
       text-decoration: none;
       display: inline-block;
-      font-size: 12px;
-      border-radius: 16px;
+      font-size: 14px;
+      border-radius: 30px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
     .button:hover {
-      box-shadow: 0 12px 16px rgba(0, 0, 0, 0.24), 0 17px 50px rgba(0, 0, 0, 0.19);
+      background: linear-gradient(45deg, #ff7f50, #ffcc57);
+      transform: scale(1.05);
     }
 
     /* Slideshow and Shape Styles */
     .square, .circle, .triangle-up {
       margin: 20px;
-      -webkit-animation: spin 4s linear infinite;
-      -moz-animation: spin 4s linear infinite;
       animation: spin 4s linear infinite;
     }
 
@@ -170,6 +171,19 @@
         padding: 10px;
       }
     }
+
+    /* Quiz Section */
+    .quiz-container {
+      width: 80%;
+      margin: 50px auto;
+      text-align: center;
+    }
+
+    #result {
+      font-size: 18px;
+      font-weight: bold;
+      color: greenyellow;
+    }
   </style>
 </head>
 <body>
@@ -177,9 +191,9 @@
   <div class="header">
     <div style="width:50%; float:left; font-size:2vw; text-align:left; color:darkred; padding-top:1%; padding-left:5%;">Smart Maths Tutor</div>
     <div class="topnav-right" style="padding-top:0.5%;">
-      <a class="active" href="{{ url_for('home') }}">Home</a>
-      <a href="{{ url_for('intro') }}">ABOUT</a>
-      <a href="{{ url_for('launch') }}">LEARN SHAPE</a>
+      <a class="active" href="#">Home</a>
+      <a href="#">ABOUT</a>
+      <a href="#">LEARN SHAPE</a>
     </div>
   </div>
 
@@ -193,25 +207,48 @@
       <div class="left" id="Square">
         <article>
           <h3 class="text-center">Square</h3>
-          <p><div class="square"></div></p>
+          <p><div class="square shape"></div></p>
         </article>
       </div>
 
       <div id="Circle" class="center">
         <article>
           <h3 class="text-center">Circle</h3>
-          <p><div class="circle"></div></p>
+          <p><div class="circle shape"></div></p>
         </article>
       </div>
 
       <div id="Triangle" class="right">
         <article>
           <h3 class="text-center">Triangle</h3>
-          <p><div class="triangle-up"></div></p>
+          <p><div class="triangle-up shape"></div></p>
         </article>
       </div>
     </section>
   </div>
+
+  <!-- Quiz Section -->
+  <div class="quiz-container">
+    <h2>Test Your Knowledge</h2>
+    <form id="quiz-form">
+      <label>What is the area of a square with side length 4?</label><br>
+      <input type="radio" id="q1a" name="q1" value="16"> 16<br>
+      <input type="radio" id="q1b" name="q1" value="8"> 8<br>
+      <input type="radio" id="q1c" name="q1" value="4"> 4<br><br>
+
+      <button type="submit" class="button">Submit Answer</button>
+    </form>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    document.getElementById('quiz-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const selectedAnswer = document.querySelector('input[name="q1"]:checked').value;
+      const resultText = selectedAnswer === '16' ? 'Correct!' : 'Try Again';
+      document.getElementById('result').textContent = resultText;
+    });
+  </script>
 
 </body>
 </html>
