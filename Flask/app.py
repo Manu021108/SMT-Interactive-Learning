@@ -124,7 +124,7 @@ class MainApp:
         self.pre = [e.x, e.y]
 
 # Load the trained model
-model = load_model("/home/manishji/Smart_Mathematics_Tutor/Flask/shape.h5")
+model = load_model("/home/manishji/Smart_Mathematics_Tutor/shapes.h5")
 
 def predict(InputImg):
     try:
