@@ -1,0 +1,7 @@
+pip
+pandas
+numpy>=1.21.2
+tensorflow
+opencv-python
+matplotlib
+scipy

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Interactive Cursor with Shapes</title>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:900&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.1/gsap.min.js"></script> <!-- GSAP Library -->
+  <style>
+    body {
+      font-family: Montserrat, sans-serif;
+      font-weight: 900;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      cursor: none; /* Hides default cursor */
+    }
+
+    .shapes {
+      position: relative;
+      height: 100vh;
+      width: 100vw;
+      background: #2128bd;
+      overflow: hidden;
+    }
+
+    .shape {
+      position: absolute;
+      border-radius: 50%;
+      will-change: transform;
+    }
+
+    .shape-1 {
+      background: #005ffe;
+      width: 650px;
+      height: 650px;
+      margin: -325px 0 0 -325px;
+    }
+
+    .shape-2 {
+      background: #ffe5e3;
+      width: 440px;
+      height: 440px;
+      margin: -220px 0 0 -220px;
+    }
+
+    .shape-3 {
+      background: #ffcc57;
+      width: 270px;
+      height: 270px;
+      margin: -135px 0 0 -135px;
+    }
+
+    .cursor {
+      position: fixed;
+      background: #2128bd;
+      width: 20px;
+      height: 20px;
+      margin: -10px 0 0 -10px;
+      border-radius: 50%;
+      will-change: transform;
+      user-select: none;
+      pointer-events: none;
+      z-index: 10000;
+    }
+
+    ::selection {
+      color: #fff;
+      background: #2128bd;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="shapes">
+    <!-- Shapes that move when the mouse is moved -->
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+  </div>
+
+  <div class="cursor"></div>
+
+  <script>
+    // GSAP animation to move shapes and custom cursor
+    document.body.addEventListener("mousemove", evt => {
+      const mouseX = evt.clientX;
+      const mouseY = evt.clientY;
+
+      gsap.set(".cursor", {
+        x: mouseX,
+        y: mouseY
+      });
+
+      gsap.to(".shape", {
+        x: mouseX,
+        y: mouseY,
+        stagger: -0.1
+      });
+    });
+  </script>
+
+</body>
+</html>
