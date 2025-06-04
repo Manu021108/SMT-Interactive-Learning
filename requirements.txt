@@ -1,6 +1,5 @@
-pip
 pandas
-numpy>=1.21.2
+numpy
 tensorflow
 opencv-python
 matplotlib
