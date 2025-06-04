@@ -1,10 +1,11 @@
 import streamlit as st
-from PIL import Image
+from PIL import Image, ImageDraw
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
 import os
+from streamlit_drawable_canvas import st_canvas
 
 # Shape formulas dictionary
 SHAPE_FORMULAS = {
@@ -49,8 +50,8 @@ SHAPE_FORMULAS = {
 @st.cache_resource
 def load_shape_model():
     """Load the trained model with error handling"""
-    model_path = "/home/manishji/SMT-Interactive-Learning/Streamlit/shapes.h5"
-    
+    model_path = "/home/manishji/SMT-Interactive-Learning/shapes.h5"
+
     try:
         # Check if file exists
         if not os.path.exists(model_path):
@@ -157,7 +158,7 @@ def main():
     st.set_page_config(page_title="Shape Recognition & Math Tutor", page_icon="📐", layout="wide")
     
     st.title("📐 Math Tutor for Shapes")
-    st.markdown("### Draw or upload a shape (Circle, Square, Triangle) to get its mathematical formulas!")
+    st.markdown("### Draw a shape or upload an image to learn its mathematical formulas!")
     
     # Load model
     model = load_shape_model()
@@ -169,71 +170,129 @@ def main():
     with st.sidebar:
         st.markdown("## 📋 Instructions")
         st.markdown("""
-        1. **Upload an image** of a shape (circle, square, or triangle)
-        2. The AI will **predict** the shape
-        3. View the **mathematical formulas** for that shape
-        4. Learn with **example calculations**
+        1. **Choose your method**:
+           - Draw on the canvas, OR
+           - Upload an image file
+        2. Click **"Predict Shape"**
+        3. Learn the **mathematical formulas** for your shape!
         """)
         
         st.markdown("## 🎨 Supported Shapes")
         st.markdown("• Circle ⭕")
-        st.markdown("• Square ⬜")
+        st.markdown("• Square ⬜")  
         st.markdown("• Triangle 🔺")
+        
+        st.markdown("## 🖊️ Drawing Tips")
+        st.markdown("""
+        - Use **black pen** for best results
+        - Draw **clear, simple shapes**
+        - Make shapes **large enough** to fill the canvas
+        - **Avoid extra lines** or decorations
+        """)
     
-    # File uploader
-    uploaded_file = st.file_uploader(
-        "Choose an image file", 
-        type=['png', 'jpg', 'jpeg'],
-        help="Upload a clear image of a circle, square, or triangle"
+    # Input method selection
+    input_method = st.radio(
+        "Choose your input method:",
+        ["🖊️ Draw on Canvas", "📁 Upload Image"],
+        horizontal=True
     )
     
-    if uploaded_file is not None:
-        # Display uploaded image
-        col1, col2 = st.columns([1, 2])
+    image_to_predict = None
+    
+    if input_method == "🖊️ Draw on Canvas":
+        st.markdown("### 🎨 Drawing Canvas")
+        st.markdown("Draw a shape below (Circle, Square, or Triangle):")
         
-        with col1:
-            st.markdown("### 🖼️ Uploaded Image")
+        # Drawing canvas
+        canvas_result = st_canvas(
+            fill_color="rgba(255, 255, 255, 0.0)",  # Transparent fill
+            stroke_width=8,
+            stroke_color="#000000",  # Black stroke
+            background_color="#FFFFFF",  # White background
+            height=400,
+            width=400,
+            drawing_mode="freedraw",
+            key="canvas",
+        )
+        
+        # Convert canvas to image
+        if canvas_result.image_data is not None:
+            # Convert to PIL Image
+            img_array = canvas_result.image_data.astype(np.uint8)
+            drawn_image = Image.fromarray(img_array)
+            
+            # Save for prediction
+            temp_path = "drawn_shape.png"
+            drawn_image.save(temp_path)
+            image_to_predict = temp_path
+            
+            # Show what was drawn
+            if np.any(img_array[:,:,3] > 0):  # Check if anything was drawn
+                st.markdown("##### Your Drawing:")
+                st.image(drawn_image, width=200)
+    
+    else:  # Upload Image
+        st.markdown("### 📁 Upload Image")
+        uploaded_file = st.file_uploader(
+            "Choose an image file", 
+            type=['png', 'jpg', 'jpeg'],
+            help="Upload a clear image of a circle, square, or triangle"
+        )
+        
+        if uploaded_file is not None:
+            # Display uploaded image
+            st.markdown("##### Uploaded Image:")
             image_data = Image.open(uploaded_file)
-            st.image(image_data, caption="Your Drawing", use_column_width=True)
+            st.image(image_data, width=200)
             
-            # Save image temporarily for prediction
-            temp_image_path = "temp_shape.png"
-            image_data.save(temp_image_path)
-        
+            # Save for prediction
+            temp_path = "uploaded_shape.png"
+            image_data.save(temp_path)
+            image_to_predict = temp_path
+    
+    # Prediction section
+    if image_to_predict and os.path.exists(image_to_predict):
+        col1, col2, col3 = st.columns([1, 1, 1])
         with col2:
-            st.markdown("### 🤖 AI Prediction")
-            
-            if st.button("🔍 Predict Shape", type="primary"):
-                with st.spinner("Analyzing your shape..."):
-                    predicted_shape, confidence = predict_shape(temp_image_path, model)
+            if st.button("🔍 Predict Shape", type="primary", use_container_width=True):
+                with st.spinner("🤖 Analyzing your shape..."):
+                    predicted_shape, confidence = predict_shape(image_to_predict, model)
                     
                     if predicted_shape:
-                        st.success(f"**Predicted Shape: {predicted_shape.title()}**")
-                        st.info(f"Confidence: {confidence:.2%}")
+                        # Show prediction result
+                        st.success(f"🎯 **Predicted Shape: {predicted_shape.title()}**")
+                        st.info(f"📊 Confidence: {confidence:.1%}")
                         
-                        # Display formulas
+                        # Now show the formulas (only after prediction)
+                        st.markdown("---")
                         display_shape_formulas(predicted_shape)
-                    
-                # Clean up temporary file
-                if os.path.exists(temp_image_path):
-                    os.remove(temp_image_path)
+                        
+                        # Add a fun fact
+                        st.markdown("### 🌟 Fun Fact!")
+                        if predicted_shape == 'circle':
+                            st.info("🎯 Circles are the most efficient shape - they enclose the maximum area for a given perimeter!")
+                        elif predicted_shape == 'square':
+                            st.info("🏗️ Squares are used in construction because they provide maximum stability and are easy to measure!")
+                        elif predicted_shape == 'triangle':
+                            st.info("🔺 Triangles are the strongest shape in engineering - they can't be deformed without changing their side lengths!")
+                
+                # Clean up temporary files
+                if os.path.exists(image_to_predict):
+                    try:
+                        os.remove(image_to_predict)
+                    except:
+                        pass
     
     else:
-        st.info("👆 Please upload an image of a shape to get started!")
-        
-        # Show sample formulas
-        st.markdown("## 📚 Shape Formulas Reference")
-        
-        tabs = st.tabs(["Circle ⭕", "Square ⬜", "Triangle 🔺"])
-        
-        with tabs[0]:
-            display_shape_formulas('circle')
-        
-        with tabs[1]:
-            display_shape_formulas('square')
-            
-        with tabs[2]:
-            display_shape_formulas('triangle')
+        if input_method == "🖊️ Draw on Canvas":
+            st.info("✏️ Draw a shape on the canvas above to get started!")
+        else:
+            st.info("📤 Upload an image to get started!")
+    
+    # Clear canvas button
+    if input_method == "🖊️ Draw on Canvas":
+        if st.button("🗑️ Clear Canvas"):
+            st.rerun()
 
 if __name__ == "__main__":
     main()
