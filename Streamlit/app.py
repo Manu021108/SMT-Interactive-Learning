@@ -8,7 +8,7 @@ import base64
 import io
 
 # Load the trained model
-model = load_model("/home/manishji/Smart_Mathematics_Tutor/shapes.h5")
+model = load_model("/home/manishji/SMT-Interactive-Learning/shapes.h5")
 
 # Prediction function
 def predict(InputImg):
