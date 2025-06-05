@@ -50,7 +50,7 @@ SHAPE_FORMULAS = {
 @st.cache_resource
 def load_shape_model():
     """Load the trained model with error handling"""
-    model_path = "/home/manishji/SMT-Interactive-Learning/shapes.h5"
+    model_path = "/home/manishji/SMT-Interactive-Learning/improved_shapes.h5"
 
     try:
         # Check if file exists
